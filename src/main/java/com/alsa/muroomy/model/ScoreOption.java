@@ -20,7 +20,7 @@ public class ScoreOption {
      * 11 21 13
      */
     static {
-        for (int i = 0; i < 5; ++i) {
+        for (int i = 0; i < 6; ++i) {
             for (int k = 0; k < 3; ++k) {
                 for (int l = 0; l < 3; ++l) {
                     for (int m = 0; m < 3; ++m) {
@@ -53,7 +53,7 @@ public class ScoreOption {
     }
 
     private int toOption(int a) {
-        int number = a / 10 - 1;
+        int number = (a - 1) / 10 - 1;
         int suit = a % 10 - 1;
         return 1 << number + (suit * 8);
     }
