@@ -81,4 +81,11 @@ public class ScoreOption {
     public String toString() {
         return a + "," + b + "," + c + ",=" + score;
     }
+
+    public static ScoreOption fromOption(int option) {
+        for (ScoreOption allOption : allOptions) {
+            if (allOption.option == option) return allOption;
+        }
+        return null;
+    }
 }
