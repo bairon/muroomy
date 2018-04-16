@@ -2,6 +2,9 @@ package com.alsa.analysis;
 
 import com.alsa.muroomy.model.ScoreOption;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -10,17 +13,28 @@ import java.util.Random;
  */
 public class Mrmnlz {
     public int iteration;
-    public int heavy = 1;
+    public int heavy = 5;
     public int scoregoal1 = 250;
     public int scoregoal2 = 400;
     Random random = new Random();
+    public static int [] capacities;
+    {
+        try {
+            capacities = (int[]) (new ObjectInputStream(new FileInputStream("C:/etc/capacities.txt")).readObject());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+    }
     public static void main(String[] args) {
         Mrmnlz ra = new Mrmnlz();
 //        ra.calculateMove(bits[5] | bits[6] | bits[7] | bits[8] | bits[9] | bits[10] | bits[11] | bits[12] | bits[13] | bits[14] | bits[15] | bits[16] | bits[17] | bits[18] | bits[19] | bits[20] | bits[21] | bits[22] | bits[23] ,
 //                bits[0] | bits[1] | bits[2] | bits[3] | bits[4], 0, 19, null);
         //int deck = bits[0] | bits[5] | bits[7] | bits[8] | bits[9] | bits[10] | bits[11] | bits[12] | bits[13] | bits[14] | bits[15] | bits[16] | bits[17] | bits[18] | bits[19] | bits[20] | bits[21] | bits[22] | bits[23];
-        int hand = bits[6] | bits[17] | bits[12] | bits[3] | bits[10];
-        int deck = 0xFFFFFF - hand;
+        int hand = bits[0] | bits[2] | bits[3] | bits[5] | bits[6];
+        int deck = 0x0000FF - hand;
         int[] options = ra.calculateMove(deck, hand, 0, Integer.bitCount(deck), 0);
         System.out.println(Arrays.toString(options));
         System.out.println(ra.iteration);
@@ -30,7 +44,7 @@ public class Mrmnlz {
     public int [] calculateMove(int deck, int hand, int score, int decksize, int depth) {
         iteration++;
         if (iteration % 1000000 == 0) System.out.println(iteration);
-        //System.out.println(Integer.toBinaryString(deck) + " ; " + Integer.toBinaryString(hand) + " ; " + score + " ; " + depth);
+        System.out.println(Integer.toBinaryString(deck) + " ; " + Integer.toBinaryString(hand) + " ; " + score + " ; " + depth);
         int restricted = 0;
         int [] bestoption = new int[5]; // option, 0+, 250+, 400+, score
         bestoption[4] = score;
@@ -81,6 +95,8 @@ public class Mrmnlz {
                     if (bestoption[3] < optionresult[3] || (bestoption[3] == optionresult[3] && bestoption[2] < optionresult[2])) {
 //                  if (bestoption[2] < optionresult[2]) {
                         System.arraycopy(optionresult, 0, bestoption, 0, optionresult.length);
+                        bestoption[0] = option.option;
+
                     }
 
                 }
@@ -105,6 +121,7 @@ public class Mrmnlz {
                 if (bestoption[3] < optionresult[3] || (bestoption[3] == optionresult[3] && bestoption[2] < optionresult[2])) {
 //                  if (bestoption[2] < optionresult[2]) {
                     System.arraycopy(optionresult, 0, bestoption, 0, optionresult.length);
+                    bestoption[0] = thr;
                 }
             }
         }
@@ -118,7 +135,7 @@ public class Mrmnlz {
                 bestoption[3]++;
             }
         }
-        //if ( result[0] > 0) System.out.println("Return option " + Integer.toBinaryString(result[0]) + " ; " + Arrays.toString(result));
+        if ( bestoption[0] > 0) System.out.println("Return option " + Integer.toBinaryString(bestoption[0]) + " ; " + Arrays.toString(bestoption));
         return bestoption;
     }
 
