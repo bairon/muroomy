@@ -20,7 +20,7 @@ public class RHImpl implements RoomyHelper {
         }
         int canthrow = hand;
         while (canthrow > 0) {
-            int option = Integer.lowestOneBit(canthrow);
+            int option = lowest(canthrow);
             canthrow &= ~option;
             int possiblescore = score + Capacity.capacity(deck | hand & ~option);
             if (bestscore < possiblescore) {
@@ -30,5 +30,26 @@ public class RHImpl implements RoomyHelper {
         }
 
         return new int []{bestoption, bestscore};
+    }
+
+    private int lowest(int hand) {
+        int lowestred =  Integer.lowestOneBit(hand & 0xFF);
+        int lowestyellow = Integer.lowestOneBit(hand >> 8 & 0xFF);
+        int lowestblue = Integer.lowestOneBit(hand >> 16 & 0xFF);
+        int lowest = lowestnonzero(lowestred, lowestyellow, lowestblue);
+        if (lowest == 0) return 0;
+        if (lowestred == lowest) return lowestred;
+        if (lowestyellow == lowest) return lowestyellow << 8;
+        if (lowestblue == lowest) return lowestblue << 16;
+        return 0;
+    }
+    private int lowestnonzero(int ... numbers) {
+        int lowest = 0;
+        for (int number : numbers) {
+            if (lowest == 0 || lowest < number) {
+                lowest = number;
+            }
+        }
+        return lowest;
     }
 }
