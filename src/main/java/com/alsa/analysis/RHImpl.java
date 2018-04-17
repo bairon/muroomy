@@ -46,7 +46,7 @@ public class RHImpl implements RoomyHelper {
     private int lowestnonzero(int ... numbers) {
         int lowest = 0;
         for (int number : numbers) {
-            if (lowest == 0 || lowest < number) {
+            if (lowest == 0 || lowest > number) {
                 lowest = number;
             }
         }

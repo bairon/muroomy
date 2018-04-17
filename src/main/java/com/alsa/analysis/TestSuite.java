@@ -4,11 +4,12 @@ import com.alsa.muroomy.model.ScoreOption;
 
 public class TestSuite {
     static RoomyHelper rh = new RHImpl();
+    static RoomyHelper mc = new MCImpl();
     public static void main(String[] args) {
         int plus0 = 0;
         int plus250 = 0;
         int plus400 = 0;
-        int N = 1000;
+        int N = 10000;
         for (int i = 0; i < N; ++i) {
             Input input = Input.getRandom();
             int score = solve(input);
