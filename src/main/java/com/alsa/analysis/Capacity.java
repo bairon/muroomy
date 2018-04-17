@@ -8,29 +8,43 @@ import java.io.*;
  * Created by alsa on 16.04.2018.
  */
 public class Capacity {
-    public static final ScoreOption[] options = ScoreOption.allOptions.toArray(new ScoreOption[0]);
+    public static int [] capacities;
+    static {
+        try {
+            capacities = (int[]) (new ObjectInputStream(new FileInputStream("capacities.txt")).readObject());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
 
+    }
+    public static final ScoreOption[] options = ScoreOption.allOptions.toArray(new ScoreOption[0]);
+    public static int capacity(int hand) {
+        if (hand > 0xFFFFFF) throw new IllegalArgumentException("Too big " + hand);
+        return capacities[hand];
+    }
     public static void main(String[] args) throws IOException, ClassNotFoundException {
-        ObjectOutputStream file = new ObjectOutputStream(new FileOutputStream("capacities.txt"));
-        int [] capacities = new int [16777216];
-        for (int i = 0; i < 16777216; ++i) {
+        int [] capacities = new int [0xFFFFFF];
+        for (int i = 0; i < 0xFFFFFF; ++i) {
             if (i % 1000000 == 0) {
                 System.out.println("Processed " + i);
             }
-            capacities[i] = capacity(i);
+            capacities[i] = cpct(i);
         }
-        System.out.println("DONE!");
+        ObjectOutputStream file = new ObjectOutputStream(new FileOutputStream("capacities.txt"));
         file.writeObject(capacities);
         file.flush();
         file.close();
+        System.out.println("DONE!");
 
         /*ObjectInputStream file = new ObjectInputStream(new FileInputStream("capacities.txt"));
         int []  capacities = (int[]) file.readObject();
         for (int i = 15777216; i < 16777216; ++i) {
             System.out.println(capacities[i]);
         }*/
-        //int capacity = capacity(16760311);
-        //System.out.println(capacity);
+        //int cpct = cpct(16760311);
+        //System.out.println(cpct);
     }
 
     /**
@@ -38,7 +52,7 @@ public class Capacity {
      *
      * @param deck
      */
-    private static int capacity(int deck) {
+    private static int cpct(int deck) {
         // should be possible max 8 combinations ( 24 cards)
         int maxscore = 0;
         if (Integer.bitCount(deck) < 3) return 0;

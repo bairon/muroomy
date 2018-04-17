@@ -30,12 +30,17 @@ public class MuHelper {
         while(Integer.bitCount(hand | deck) > 2) {
             optionscore = rh.optionscore(deck, hand, score);
             printstatus();
+            if (optionscore[0] == 0) break;
             move = input("Enter move:");
             ScoreOption scoreOption = ScoreOption.fromOption(move);
             if (scoreOption != null) {
                 score += scoreOption.score;
             }
-            fromdeck = input("Got from deck: ");
+            if (Integer.bitCount(deck) > 0) {
+                fromdeck = input("Got from deck: ");
+            } else {
+                fromdeck = 0;
+            }
             hand &= ~move;
             hand |= fromdeck;
             deck &= ~fromdeck;

@@ -66,7 +66,7 @@ public class Mrmnlz {
                     if (decksize <= 3) {
                         addResult(calculateMove(0, hand & ~option.option | deck, score + option.score, 0, depth + 1), optionresult);
                     } else {
-                        // get random bit
+                        // get getRandom bit
                         for (int counter = 0; counter < heavy; ++counter) {
 /*
                         for (int bit1 = 0; bit1 < 24; ++bit1) {
