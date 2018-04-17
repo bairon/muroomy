@@ -8,7 +8,7 @@ public class TestSuite {
         int plus0 = 0;
         int plus250 = 0;
         int plus400 = 0;
-        int N = 1000;
+        int N = 1;
         for (int i = 0; i < N; ++i) {
             Input input = Input.getRandom();
             int score = solve(input);
@@ -26,9 +26,10 @@ public class TestSuite {
         int score = 0;
         int position = 0;
         do {
+            ;
             int[] optionscore = rh.optionscore(input.deck, input.hand, score);
             if (optionscore[0] == 0) {
-                System.out.println("NO options - error");
+                System.out.println("NO options - very bad");
                 break;
             }
             ScoreOption scoreOption = ScoreOption.fromOption(optionscore[0]);
@@ -44,4 +45,5 @@ public class TestSuite {
         } while (!(input.deck == 0 && Integer.bitCount(input.hand) < 3));
         return score;
     }
+
 }
