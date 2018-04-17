@@ -9,7 +9,7 @@ public class TestSuite {
         int plus0 = 0;
         int plus250 = 0;
         int plus400 = 0;
-        int N = 10000;
+        int N = 100000;
         for (int i = 0; i < N; ++i) {
             Input input = Input.getRandom();
             int score = solve(input);
@@ -27,12 +27,15 @@ public class TestSuite {
         int score = 0;
         int position = 0;
         do {
-            ;
             int[] optionscore = rh.optionscore(input.deck, input.hand, score);
-            if (optionscore[0] == 0) {
-                System.out.println("NO options - very bad");
-                break;
+            /*if (Integer.bitCount(input.deck) > 15) {
+                optionscore = rh.optionscore(input.deck, input.hand, score);
+            } else {
+                optionscore = mc.optionscore(input.deck, input.hand, score);
             }
+            if (optionscore[0] == 0) {
+                optionscore = rh.optionscore(input.deck, input.hand, score);
+            }*/
             ScoreOption scoreOption = ScoreOption.fromOption(optionscore[0]);
             if (scoreOption != null) {
                 score += scoreOption.score;
@@ -44,6 +47,7 @@ public class TestSuite {
                 input.deck &= ~fromdeck;
             }
         } while (!(input.deck == 0 && Integer.bitCount(input.hand) < 3));
+        //System.out.println("Solved with score " + score);
         return score;
     }
 

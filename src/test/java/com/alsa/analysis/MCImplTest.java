@@ -14,7 +14,8 @@ public class MCImplTest {
     @Test
     public void name() throws Exception {
         MCImpl mc = new MCImpl();
-        int[] option = mc.calculateOption(10633472, 6143743, 0,
+        int[] optionscore = mc.optionscore(6143743, 10633472, 0);
+        /*int[] option = mc.calculateOption(10633472, 6143743, 0,
                 new int[]{5,
                         12,
                         10,
@@ -36,6 +37,6 @@ public class MCImplTest {
                         20},
                 0, 500);
         System.out.println(option);
-
+*/
     }
 }

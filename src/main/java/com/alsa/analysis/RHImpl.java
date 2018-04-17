@@ -26,6 +26,22 @@ public class RHImpl implements RoomyHelper {
             if (bestscore < possiblescore) {
                 bestscore = possiblescore;
                 bestoption = option;
+            } else if (bestscore == possiblescore && possiblescore > 0 && bestscore == score) {
+                // compare bestoption and option if they breaking almost ready combination
+                int optionBreakScore = 0;
+                int bestOptionBreakScore = 0;
+                for (ScoreOption possible : ScoreOption.allOptions) {
+                    if (Integer.bitCount(possible.option & hand) == 2 && (possible.option & option) > 0) {
+                        optionBreakScore += possible.score;
+                    }
+                    if (Integer.bitCount(possible.option & hand) == 2 && (possible.option & bestoption) > 0) {
+                        bestOptionBreakScore += possible.score;
+                    }
+                }
+                if (optionBreakScore < bestOptionBreakScore) {
+                    bestscore = possiblescore;
+                    bestoption = option;
+                }
             }
         }
 
@@ -46,7 +62,7 @@ public class RHImpl implements RoomyHelper {
     private int lowestnonzero(int ... numbers) {
         int lowest = 0;
         for (int number : numbers) {
-            if (lowest == 0 || lowest > number) {
+            if (lowest == 0 || lowest > number && number > 0) {
                 lowest = number;
             }
         }

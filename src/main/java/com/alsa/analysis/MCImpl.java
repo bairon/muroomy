@@ -25,15 +25,16 @@ public class MCImpl implements RoomyHelper {
         optScore.clear();
         int [] order = initialOrder(deck);
 
-        for (int i = 0; i < 50; ++i) {
+        int tries = 30 + (19 - Integer.bitCount(deck)) * 5;
+        for (int i = 0; i < tries; ++i) {
             Utils.shuffleArray(order);
             int[] option;
             int threshold = 510;
             do {
                 threshold-=10;
                 option = calculateOption(hand, deck, 0, order, score, threshold);
-                //System.out.println(String.format("Option %s, threshold %s", option[1], threshold));
             } while (option[1] < threshold && threshold >= 0);
+            //System.out.println(String.format("Option %s, threshold %s", option[1], threshold));
 
             merge(option);
             //System.out.println(String.format("input processed: option: %s, score: %s", option[0], option[1]));
@@ -48,13 +49,13 @@ public class MCImpl implements RoomyHelper {
             int percent0 = occur0.get(key) == null ? 0 : occur0.get(key) * 100 / optOccur.get(key);
             int percent250 = occur250.get(key) == null ? 0 : occur250.get(key) * 100 / optOccur.get(key);
             int percent400 = occur400.get(key) == null ? 0 : occur400.get(key) * 100 / optOccur.get(key);
-            System.out.println(String.format("option: %s, occur0: %s, occur250: %s, occur400: %s", key, percent0, percent250, percent400));
+            //System.out.println(String.format("option: %s, occur0: %s, occur250: %s, occur400: %s", key, percent0, percent250, percent400));
             if (bestoccur < percent250 + percent400) {
                 bestoccur = percent250 + percent400;
                 bestopt = key;
             }
         }
-        System.out.println();
+        //System.out.println();
         return new int []{bestopt, bestoccur};
     }
 
@@ -114,11 +115,6 @@ public class MCImpl implements RoomyHelper {
     }
 
     public int[] calculateOption(int hand, int deck, int position, int[] order, int score, int threshold) {
-        /*iteration ++;
-        if (iteration % 10000000 == 0) {
-            System.out.println("Processed: " + iteration);
-            //iteration = 0;
-        }*/
         if (score >= threshold) {
             return new int[]{0, score};
         }
