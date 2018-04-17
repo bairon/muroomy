@@ -25,7 +25,7 @@ public class MCImpl implements RoomyHelper {
         optScore.clear();
         int [] order = initialOrder(deck);
 
-        for (int i = 0; i < 100; ++i) {
+        for (int i = 0; i < 50; ++i) {
             Utils.shuffleArray(order);
             int[] option;
             int threshold = 510;
@@ -33,7 +33,7 @@ public class MCImpl implements RoomyHelper {
                 threshold-=10;
                 option = calculateOption(hand, deck, 0, order, score, threshold);
                 //System.out.println(String.format("Option %s, threshold %s", option[1], threshold));
-            } while (option[1] < threshold && threshold > 250);
+            } while (option[1] < threshold && threshold >= 0);
 
             merge(option);
             //System.out.println(String.format("input processed: option: %s, score: %s", option[0], option[1]));
@@ -119,6 +119,9 @@ public class MCImpl implements RoomyHelper {
             System.out.println("Processed: " + iteration);
             //iteration = 0;
         }*/
+        if (score >= threshold) {
+            return new int[]{0, score};
+        }
         int [] bestoption = new int[]{0, 0};
         if (score + Capacity.capacity(hand | deck) >= threshold) {
             bestoption[1] = score;
