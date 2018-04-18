@@ -31,13 +31,17 @@ public class MuHelper {
             optionscore = rh.optionscore(deck, hand, score);
             printstatus();
             if (optionscore[0] == 0) break;
-            move = input("Enter move:");
+            move = optionscore[0];//input("Enter move:");
             ScoreOption scoreOption = ScoreOption.fromOption(move);
             if (scoreOption != null) {
                 score += scoreOption.score;
             }
             if (Integer.bitCount(deck) > 0) {
-                fromdeck = input("Got from deck: ");
+                if (Integer.bitCount(deck) <= Integer.bitCount(move)) {
+                    fromdeck = deck;
+                } else {
+                    fromdeck = input("Got from deck: ");
+                }
             } else {
                 fromdeck = 0;
             }
@@ -112,31 +116,9 @@ public class MuHelper {
         int result = 0;
         String[] cards = input.split(" ");
         for (String card : cards) {
-            result |= parseCard(card);
+            result |= Utils.parseCard(card);
         }
         return result;
     }
 
-    private int parseCard(String card) {
-        if (card.length() != 2) throw new IllegalArgumentException("Card input not valid: " + card);
-        int number;
-        try {
-            number = Integer.parseInt(card.substring(0, 1));
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Card input not valid: " + card);
-        }
-        String suffix = card.substring(1);
-        int suit;
-        if ("r".equalsIgnoreCase(suffix) || "k".equalsIgnoreCase(suffix)) {
-            suit = 0;
-        } else if ("y".equalsIgnoreCase(suffix) || "j".equalsIgnoreCase(suffix)) {
-            suit = 1;
-        } else if ("b".equalsIgnoreCase(suffix) || "s".equalsIgnoreCase(suffix)) {
-            suit = 2;
-        } else {
-            throw new IllegalArgumentException("Card input not valid: " + card);
-        }
-        return 1 << (number - 1) + (suit * 8);
-
-    }
 }
