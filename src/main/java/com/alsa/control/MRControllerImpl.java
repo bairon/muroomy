@@ -194,7 +194,8 @@ public class MRControllerImpl implements MRController {
         }
 */      for (int number = 0; number < 5; ++number) {
             for (int i = 0; i < 24; ++i) {
-                templates[number][i] = ImageIO.read(new FileInputStream(String.format("cards/%s/%s.png", number, 1 << i)));
+                InputStream input = getClass().getClassLoader().getResourceAsStream(String.format("cards/%s/%s.png", number, 1 << i));
+                templates[number][i] = ImageIO.read(input);
             }
         }
     }

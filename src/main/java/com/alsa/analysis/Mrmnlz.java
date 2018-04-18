@@ -20,7 +20,7 @@ public class Mrmnlz {
     public static int [] capacities;
     {
         try {
-            capacities = (int[]) (new ObjectInputStream(new FileInputStream("C:/etc/capacities.txt")).readObject());
+            capacities = (int[]) (new ObjectInputStream(new FileInputStream("C:/etc/capacities.properties")).readObject());
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {

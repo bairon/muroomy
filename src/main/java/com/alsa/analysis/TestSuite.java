@@ -28,14 +28,6 @@ public class TestSuite {
         int position = 0;
         do {
             int[] optionscore = rh.optionscore(input.deck, input.hand, score);
-            /*if (Integer.bitCount(input.deck) > 15) {
-                optionscore = rh.optionscore(input.deck, input.hand, score);
-            } else {
-                optionscore = mc.optionscore(input.deck, input.hand, score);
-            }
-            if (optionscore[0] == 0) {
-                optionscore = rh.optionscore(input.deck, input.hand, score);
-            }*/
             ScoreOption scoreOption = ScoreOption.fromOption(optionscore[0]);
             if (scoreOption != null) {
                 score += scoreOption.score;

@@ -11,10 +11,6 @@ public class MCImpl implements RoomyHelper {
     Map<Integer, Integer> occur400 = new HashMap<>();
     Map<Integer, Integer> optOccur = new HashMap<>();
     Map<Integer, Integer> optScore = new HashMap<>();
-    public MCImpl() {
-        Capacity.capacity(0);
-    }
-
     int iteration = 0;
     @Override
     public int[] optionscore(int deck, int hand, int score) {

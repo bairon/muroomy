@@ -8,6 +8,8 @@ import java.util.List;
  */
 public class ScoreOption {
     public static final List<ScoreOption> allOptions = new ArrayList();
+    public static final ScoreOption[] options = ScoreOption.allOptions.toArray(new ScoreOption[0]);
+
     public int a;
     public int b;
     public int c;
