@@ -61,10 +61,9 @@ public class MRControllerImpl implements MRController {
         if (move != 0) {
             if (Integer.bitCount(move) == 1) {
                 throwCard(move);
-                Utils.sleep(100);
             } else {
                 placeCards(move);
-                Utils.sleep(3000);
+                Utils.sleep(2000);
             }
         }
         clickDeck();
@@ -81,9 +80,9 @@ public class MRControllerImpl implements MRController {
         for (int i = 0; i < 5; ++i) {
             if ((move & cards[i]) > 0) {
                 lclick(xcards[i] + xoffset + width / 2, ycards[i] + yoffset + height / 2);
-                Utils.sleep(700);
+                Utils.sleep(300);
                 lclick(xplace[place], yplace[place]);
-                Utils.sleep(700);
+                Utils.sleep(300);
                 place++;
             }
         }
@@ -110,13 +109,12 @@ public class MRControllerImpl implements MRController {
 
     public void refresh() {
         screen = robot.createScreenCapture(frame);
-        Utils.sleep(100);
         hand = 0;
         for (int i = 0; i < 5; ++i) {
             cards[i] = readCard(i);
             hand |= cards[i];
         }
-        printcards();
+        //printcards();
     }
 
     private void printcards() {
@@ -202,18 +200,18 @@ public class MRControllerImpl implements MRController {
     private void clickDeck() {
         lclick(xdeck, ydeck);
         lclick(xdeck, ydeck);
-        Utils.sleep(1000);
+        Utils.sleep(300);
     }
 
     private void clickStart() {
 
         rclick(xstart, ystart);
         lclick(xstart, ystart);
-        Utils.sleep(700);
+        Utils.sleep(300);
     }
     private void clickOk() {
         lclick(xok, yok);
-        Utils.sleep(700);
+        Utils.sleep(300);
     }
 
 
@@ -227,10 +225,10 @@ public class MRControllerImpl implements MRController {
     }
     private void rclick(int x, int y) {
         robot.mouseMove(x, y);
-        Utils.sleep(200);
+        Utils.sleep(100);
         robot.mousePress(InputEvent.BUTTON3_MASK);
-        Utils.sleep(350);
+        Utils.sleep(250);
         robot.mouseRelease(InputEvent.BUTTON3_MASK);
-        Utils.sleep(200);
+        Utils.sleep(100);
     }
 }

@@ -19,33 +19,38 @@ public class RHImpl implements RoomyHelper {
             }
         }
         int canthrow = hand;
+        int bestthrow = 0;
+        int bestthrowscore = 0;
         while (canthrow > 0) {
             int option = lowest(canthrow);
             canthrow &= ~option;
             int possiblescore = score + Capacity.capacity(deck | hand & ~option);
-            if (bestscore < possiblescore) {
-                bestscore = possiblescore;
-                bestoption = option;
-            } else if (bestscore == possiblescore && possiblescore > 0 && bestscore == score) {
-                // compare bestoption and option if they breaking almost ready combination
+            if (bestthrowscore < possiblescore) {
+                bestthrowscore = possiblescore;
+                bestthrow = option;
+            } else if (bestthrowscore == possiblescore && possiblescore > 0 && bestthrowscore == score) {
+                // compare bestthrow and option if they breaking almost ready combination
                 int optionBreakScore = 0;
                 int bestOptionBreakScore = 0;
                 for (ScoreOption possible : ScoreOption.allOptions) {
                     if (Integer.bitCount(possible.option & hand) == 2 && (possible.option & option) > 0) {
                         optionBreakScore += possible.score;
                     }
-                    if (Integer.bitCount(possible.option & hand) == 2 && (possible.option & bestoption) > 0) {
+                    if (Integer.bitCount(possible.option & hand) == 2 && (possible.option & bestthrow) > 0) {
                         bestOptionBreakScore += possible.score;
                     }
                 }
                 if (optionBreakScore < bestOptionBreakScore) {
-                    bestscore = possiblescore;
-                    bestoption = option;
+                    bestthrowscore = possiblescore;
+                    bestthrow = option;
                 }
             }
         }
-
-        return new int []{bestoption, bestscore};
+        if (bestscore + 30 < bestthrowscore) {
+            return new int[]{bestthrow, bestthrowscore};
+        } else {
+            return new int[]{bestoption, bestscore};
+        }
     }
 
     private int lowest(int hand) {

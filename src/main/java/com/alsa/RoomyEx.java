@@ -24,6 +24,9 @@ public class RoomyEx {
         Utils.sleep(2000);
         while(true) {
             roomy.playgame();
+            System.out.println();
+            System.out.println("===================================================");
+            System.out.println();
         }
     }
     public RoomyEx() throws AWTException {
