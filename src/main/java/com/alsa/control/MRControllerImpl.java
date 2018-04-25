@@ -18,6 +18,9 @@ public class MRControllerImpl implements MRController {
     public static final int [] xplace = new int []{405, 435, 465};
     public static final int [] yplace = new int []{200, 200, 200};
 
+    public static final int xnormal = 429;
+    public static final int ynormal = 259;
+
     public static final int xstart = 410;
     public static final int ystart = 310;
 
@@ -45,6 +48,7 @@ public class MRControllerImpl implements MRController {
 
     @Override
     public void startGame() {
+        clickNormal();
         clickStart();
         clickDeck();
     }
@@ -63,7 +67,6 @@ public class MRControllerImpl implements MRController {
                 throwCard(move);
             } else {
                 placeCards(move);
-                Utils.sleep(2000);
             }
         }
         clickDeck();
@@ -76,21 +79,39 @@ public class MRControllerImpl implements MRController {
     }
 
     private void placeCards(int move) {
-        int place = 0;
-        for (int i = 0; i < 5; ++i) {
-            if ((move & cards[i]) > 0) {
-                lclick(xcards[i] + xoffset + width / 2, ycards[i] + yoffset + height / 2);
-                Utils.sleep(300);
-                lclick(xplace[place], yplace[place]);
-                Utils.sleep(300);
-                place++;
+        int [] cardsBeforePlace = new int[5];
+        int handBeforePlace = hand;
+        System.arraycopy(cards, 0, cardsBeforePlace, 0, cards.length);
+        boolean placed = false;
+        do {
+            int place = 0;
+            for (int i = 0; i < 5; ++i) {
+                if ((move & cardsBeforePlace[i]) > 0) {
+                    if (cards[i] != 0) {
+                        lclick(xcards[i] + xoffset + width / 2, ycards[i] + yoffset + height / 2);
+                        Utils.sleep(300);
+                        lclick(xplace[place], yplace[place]);
+                        Utils.sleep(300);
+                        lclickfast(xdeck, ydeck);
+                        lclickfast(xdeck, ydeck);
+                    }
+                    place++;
+                }
             }
-        }
+            //lclickfast(xdeck, ydeck);
+            //lclickfast(xdeck, ydeck);
+            refresh();
+            placed = (hand + move  == handBeforePlace || Integer.bitCount(hand) == 5);
+        } while (!placed);
+        Utils.sleep(2000);
+
     }
 
     private void throwCard(int move) {
         for (int i = 0; i < 5; ++i) {
             if (cards[i] == move) {
+                rclick(xcards[i] + xoffset + width / 2, ycards[i] + yoffset + height / 2);
+                rclick(xcards[i] + xoffset + width / 2, ycards[i] + yoffset + height / 2);
                 rclick(xcards[i] + xoffset + width / 2, ycards[i] + yoffset + height / 2);
                 rclick(xcards[i] + xoffset + width / 2, ycards[i] + yoffset + height / 2);
             }
@@ -198,11 +219,19 @@ public class MRControllerImpl implements MRController {
         }
     }
     private void clickDeck() {
-        lclick(xdeck, ydeck);
-        lclick(xdeck, ydeck);
+        lclickfast(xdeck, ydeck);
+        lclickfast(xdeck, ydeck);
+        lclickfast(xdeck, ydeck);
+        lclickfast(xdeck, ydeck);
         Utils.sleep(300);
     }
 
+    private void clickNormal() {
+
+        rclick(xnormal, ynormal);
+        lclick(xnormal, ynormal);
+        Utils.sleep(300);
+    }
     private void clickStart() {
 
         rclick(xstart, ystart);
@@ -217,18 +246,26 @@ public class MRControllerImpl implements MRController {
 
     private void lclick(int x, int y) {
         robot.mouseMove(x, y);
-        Utils.sleep(200);
+        Utils.sleep(250);
         robot.mousePress(InputEvent.BUTTON1_MASK);
-        Utils.sleep(350);
+        Utils.sleep(250);
         robot.mouseRelease(InputEvent.BUTTON1_MASK);
-        Utils.sleep(200);
+        Utils.sleep(100);
+    }
+    private void lclickfast(int x, int y) {
+        robot.mouseMove(x, y);
+        Utils.sleep(30);
+        robot.mousePress(InputEvent.BUTTON1_MASK);
+        Utils.sleep(100);
+        robot.mouseRelease(InputEvent.BUTTON1_MASK);
+        Utils.sleep(30);
     }
     private void rclick(int x, int y) {
         robot.mouseMove(x, y);
-        Utils.sleep(100);
+        Utils.sleep(30);
         robot.mousePress(InputEvent.BUTTON3_MASK);
-        Utils.sleep(250);
-        robot.mouseRelease(InputEvent.BUTTON3_MASK);
         Utils.sleep(100);
+        robot.mouseRelease(InputEvent.BUTTON3_MASK);
+        Utils.sleep(30);
     }
 }

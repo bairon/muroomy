@@ -25,16 +25,7 @@ public class Capacity {
 
 
     public static int capacity(int hand) {
-        if (hand > 0xFFFFFF) throw new IllegalArgumentException("Too big " + hand);
-        Capacity capacity = getInstance();
-        return capacity.capacities[hand];
-    }
-
-    private static Capacity getInstance() {
-        if (instance == null) {
-            instance = new Capacity();
-        }
-        return instance;
+        return instance.capacities[hand];
     }
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
@@ -156,5 +147,10 @@ public class Capacity {
             }
         }
         return maxscore;
+    }
+
+
+    public static void init() {
+        if (instance == null) instance = new Capacity();
     }
 }

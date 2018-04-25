@@ -3,6 +3,9 @@ package com.alsa.analysis;
 import com.alsa.muroomy.model.ScoreOption;
 
 public class RHImpl implements RoomyHelper {
+    public RHImpl() {
+        Capacity.init();
+    }
 
     @Override
     public int [] optionscore(int deck, int hand, int score) {
@@ -30,7 +33,7 @@ public class RHImpl implements RoomyHelper {
                 bestthrow = option;
             } else if (bestthrowscore == possiblescore && possiblescore > 0 && bestthrowscore == score) {
                 // compare bestthrow and option if they breaking almost ready combination
-                int optionBreakScore = 0;
+                /*int optionBreakScore = 0;
                 int bestOptionBreakScore = 0;
                 for (ScoreOption possible : ScoreOption.allOptions) {
                     if (Integer.bitCount(possible.option & hand) == 2 && (possible.option & option) > 0) {
@@ -43,7 +46,7 @@ public class RHImpl implements RoomyHelper {
                 if (optionBreakScore < bestOptionBreakScore) {
                     bestthrowscore = possiblescore;
                     bestthrow = option;
-                }
+                }*/
             }
         }
         if (bestscore + 30 < bestthrowscore) {
