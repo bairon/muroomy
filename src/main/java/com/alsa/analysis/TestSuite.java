@@ -5,11 +5,12 @@ import com.alsa.muroomy.model.ScoreOption;
 public class TestSuite {
     static RoomyHelper rh = new RHImpl();
     static RoomyHelper mc = new MCImpl();
+    static RoomyHelper rec = new RecursiveCapHelperImpl();
     public static void main(String[] args) {
         int plus0 = 0;
         int plus250 = 0;
         int plus400 = 0;
-        int N = 100000;
+        int N = 10;
         for (int i = 0; i < N; ++i) {
             Input input = Input.getRandom();
             int score = solve(input);
@@ -27,11 +28,12 @@ public class TestSuite {
         int score = 0;
         int position = 0;
         do {
-            int[] optionscore = rh.optionscore(input.deck, input.hand, score);
+            int[] optionscore = rec.optionscore(input.deck, input.hand, score);
             ScoreOption scoreOption = ScoreOption.fromOption(optionscore[0]);
             if (scoreOption != null) {
                 score += scoreOption.score;
             }
+            System.out.println(Utils.format(input.hand) + "   move:  " + Utils.format(optionscore[0]));
             input.hand &= ~optionscore[0];
             while (position < input.order.length && Integer.bitCount(input.hand) < 5) {
                 int fromdeck = input.deck & (1 << input.order[position++]);

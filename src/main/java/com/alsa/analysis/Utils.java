@@ -103,4 +103,22 @@ public class Utils {
         System.out.println("Test red: " + test6red);
         System.out.println("Test yellow: " + test6yellow);
     }
+    public static String format(int hand) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(formatCards(hand & 0xFF, "r"));
+        sb.append(formatCards(hand >> 8 & 0xFF, "y"));
+        sb.append(formatCards(hand >> 16 & 0xFF, "b"));
+        return sb.toString();
+    }
+
+    public static String formatCards(int hand, String suffix) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 8; ++i) {
+            if ((hand & (1 << i)) > 0) {
+                sb.append(i + 1).append(suffix).append(' ');
+                sb.append(" ");
+            }
+        }
+        return sb.toString();
+    }
 }

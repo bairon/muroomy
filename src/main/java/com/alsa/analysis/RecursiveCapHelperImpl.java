@@ -16,7 +16,11 @@ public class RecursiveCapHelperImpl implements RoomyHelper {
     @Override
     public int[] optionscore(int deck, int hand, int score) {
         int decksize = Integer.bitCount(deck);
-        return null;//recursiveOptionscore(deck, decksize, hand, score, getDepth(decksize));
+        long[] optionscore = recursiveOptionscore(deck, decksize, hand, score, getDepth(decksize));
+        int [] result = new int[2];
+        result[0] = (int) optionscore[5];
+        result[1] = (int) (optionscore[4] / optionscore[0]);
+        return result;
     }
 
     private static int getDepth(int decksize) {
@@ -32,20 +36,22 @@ public class RecursiveCapHelperImpl implements RoomyHelper {
     }
 
     private long[] recursiveOptionscore(int deck, int decksize, int hand, int score, int depth) {
-        long[] result = new long[5];
-        if (depth == 0 || deck == 0) {
+        // variations, 0+, 250+, 400+, tatalscore, bestoption
+        long[] result = new long[6];
+        if (depth <= 0 || deck == 0) {
             int sc = score + Capacity.capacity(hand | deck);
             if (sc < 250) {
-                return new long[]{1, 1, 0, 0, sc};
+                return new long[]{1, 1, 0, 0, sc, Integer.lowestOneBit(hand)};
             } else if (sc < 400) {
-                return new long[]{1, 0, 1, 0, sc};
+                return new long[]{1, 0, 1, 0, sc, Integer.lowestOneBit(hand)};
             } else {
-                return new long[]{1, 0, 0, 1, sc};
+                return new long[]{1, 0, 0, 1, sc, Integer.lowestOneBit(hand)};
             }
         }
         for (ScoreOption option : ScoreOption.allOptions) {
             if ((option.option & hand) == option.option) {
-                long[] optionresult = new long[5];
+                long[] optionresult = new long[6];
+                optionresult[5] = option.option;
                 int fromdeck = 0;
                 if (decksize > 2) {
                     int bit1, bit2, bit3, bit2left, bit3left, bit1left = deck;
@@ -69,26 +75,68 @@ public class RecursiveCapHelperImpl implements RoomyHelper {
                     long[] traverseResult = recursiveOptionscore(0, 0, (hand & ~option.option) | fromdeck, score + option.score, depth - decksize);
                     merge(optionresult, traverseResult);
                 }
-                mergeresult(result, optionresult);
+                result = mergeresult(result, optionresult);
             }
         }
         int canthrow = hand;
         while (canthrow > 0) {
             int option = Integer.lowestOneBit(canthrow);
             canthrow &= ~option;
-            long[] throwresult = new long[5];
+            long[] throwresult = new long[6];
+            throwresult[5] = option;
             int bit1, bit1left = deck;
             while (bit1left > 0) {
                 bit1 = Integer.lowestOneBit(bit1left);
+                bit1left &= ~bit1;
                 long[] traverseResult = recursiveOptionscore(deck & ~bit1, decksize - 1, (hand & ~option) | bit1, score, depth - 1);
                 merge(throwresult, traverseResult);
             }
-            mergeresult(result, throwresult);
+            result = mergeresult(result, throwresult);
         }
         return result;
     }
 
-    private void mergeresult(long[] result, long[] optionresult) {
+    /**
+     * priority: 400+ percent, average score
+     * @param result
+     * @param optionresult
+     * @return
+     */
+    private long [] mergeresult(long[] result, long[] optionresult) {
+        //return mergeresult1(result, optionresult);
+        return mergeresult2(result, optionresult);
+    }
+
+    private long[] mergeresult1(long[] result, long[] optionresult) {
+
+        if (result[0] == 0) {
+            return optionresult;
+        } else {
+            if (result[3] * optionresult[0] < optionresult[3] * result[0]) {
+                return optionresult;
+            } else if (result[3] * optionresult[0] == optionresult[3] * result[0]) {
+                if (result[4] * optionresult[0] < optionresult[4] * result[0]) {
+                    return optionresult;
+                }
+            }
+            return result;
+        }
+
+    }
+    private long[] mergeresult2(long[] result, long[] optionresult) {
+
+        if (result[0] == 0) {
+            return optionresult;
+        } else {
+            if (result[4] * optionresult[0] < optionresult[4] * result[0]) {
+                return optionresult;
+            } else if (result[4] * optionresult[0] == optionresult[4] * result[0]) {
+                if (result[3] * optionresult[0] < optionresult[3] * result[0]) {
+                    return optionresult;
+                }
+            }
+            return result;
+        }
 
     }
 
