@@ -6,7 +6,7 @@ import com.alsa.muroomy.model.ScoreOption;
  * Created by alsa on 24.04.2018.
  */
 public class RecursiveCapHelperImpl implements RoomyHelper {
-    static long N = 100000000;
+    static long N = 10000000;
     static int wide = 7;
 
     public RecursiveCapHelperImpl() {
@@ -19,12 +19,28 @@ public class RecursiveCapHelperImpl implements RoomyHelper {
         long[] optionscore = recursiveOptionscore(deck, decksize, hand, score, getDepth(decksize));
         int [] result = new int[2];
         result[0] = (int) optionscore[5];
-        result[1] = (int) (optionscore[4] / optionscore[0]);
+        result[1] = optionscore[0] > 0 ? (int) (optionscore[4] / optionscore[0]) : 0;
         return result;
     }
 
     private static int getDepth(int decksize) {
-        long variations = 1;
+        switch(decksize) {
+            case 19: return 2;
+            case 18: return 2;
+            case 17: return 2;
+            case 16: return 2;
+            case 15: return 2;
+            case 14: return 2;
+            case 13: return 3;
+            case 12: return 3;
+            case 11: return 3;
+            case 10: return 3;
+            case 9: return 4;
+            case 8: return 4;
+            case 7: return 5;
+            default: return 6;
+        }
+        /*long variations = 1;
         int depth = 0;
         while (variations <= N && depth < decksize) {
             variations *= wide * (decksize - depth);
@@ -32,68 +48,89 @@ public class RecursiveCapHelperImpl implements RoomyHelper {
                 depth++;
             }
         }
-        return Math.min(decksize, depth);
+        return Math.min(decksize, depth);*/
     }
 
     private long[] recursiveOptionscore(int deck, int decksize, int hand, int score, int depth) {
-        // variations, 0+, 250+, 400+, tatalscore, bestoption
-        long[] result = new long[6];
-        if (depth <= 0 || deck == 0) {
-            int sc = score + Capacity.capacity(hand | deck);
-            if (sc < 250) {
-                return new long[]{1, 1, 0, 0, sc, Integer.lowestOneBit(hand)};
-            } else if (sc < 400) {
-                return new long[]{1, 0, 1, 0, sc, Integer.lowestOneBit(hand)};
-            } else {
-                return new long[]{1, 0, 0, 1, sc, Integer.lowestOneBit(hand)};
-            }
+        if (score + Capacity.capacity(hand | deck) < 250) {
+            return new long[]{1, 1, 0, 0, 0, 0};
         }
-        for (ScoreOption option : ScoreOption.allOptions) {
-            if ((option.option & hand) == option.option) {
-                long[] optionresult = new long[6];
-                optionresult[5] = option.option;
-                int fromdeck = 0;
-                if (decksize > 2) {
-                    int bit1, bit2, bit3, bit2left, bit3left, bit1left = deck;
+        // variations, 0+, 250+, 400+, tatalscore, bestoption
+        long[] result = null;
+        long [] bestscoreresult = null;
+        long [] bestthrowresult = null;
+            if (depth >= 0 && (decksize > 0 || Integer.bitCount(hand) + decksize > 2)) {
+                int canthrow = hand;
+                while (canthrow > 0) {
+                    int option = Integer.lowestOneBit(canthrow);
+                    canthrow &= ~option;
+                    long[] throwresult = new long[6];
+                    throwresult[5] = option;
+                    int bit1, bit1left = deck;
                     while (bit1left > 0) {
                         bit1 = Integer.lowestOneBit(bit1left);
-                        bit2left = (bit1left &= ~bit1);
-                        while (bit2left > 0) {
-                            bit2 = Integer.lowestOneBit(bit2left);
-                            bit3left = (bit2left &= ~bit2);
-                            while (bit3left > 0) {
-                                bit3 = Integer.lowestOneBit(bit3left);
-                                bit3left &= ~bit3;
-                                fromdeck = bit1 | bit2 | bit3;
-                                long[] traverseResult = recursiveOptionscore(deck & ~fromdeck, decksize - 3, (hand & ~option.option) | fromdeck, score + option.score, depth - 3);
-                                merge(optionresult, traverseResult);
-                            }
-                        }
+                        bit1left &= ~bit1;
+                        long[] traverseResult = recursiveOptionscore(deck & ~bit1, decksize - 1, (hand & ~option) | bit1, score, depth - 1);
+                        merge(throwresult, traverseResult);
                     }
-                } else {
-                    fromdeck = deck;
-                    long[] traverseResult = recursiveOptionscore(0, 0, (hand & ~option.option) | fromdeck, score + option.score, depth - decksize);
-                    merge(optionresult, traverseResult);
+                    bestthrowresult = mergeresult(bestthrowresult, throwresult);
                 }
-                result = mergeresult(result, optionresult);
+                for (ScoreOption option : ScoreOption.allOptions) {
+                    if ((option.option & hand) == option.option) {
+                        long[] optionresult = new long[6];
+                        optionresult[5] = option.option;
+                        int fromdeck = 0;
+                        if (decksize > 2) {
+                            int bit1, bit2, bit3, bit2left, bit3left, bit1left = deck;
+                            while (bit1left > 0) {
+                                bit1 = Integer.lowestOneBit(bit1left);
+                                bit2left = (bit1left &= ~bit1);
+                                while (bit2left > 0) {
+                                    bit2 = Integer.lowestOneBit(bit2left);
+                                    bit3left = (bit2left &= ~bit2);
+                                    while (bit3left > 0) {
+                                        bit3 = Integer.lowestOneBit(bit3left);
+                                        bit3left &= ~bit3;
+                                        fromdeck = bit1 | bit2 | bit3;
+                                        long[] traverseResult = recursiveOptionscore(deck & ~fromdeck, decksize - 3, (hand & ~option.option) | fromdeck, score + option.score, depth - 3);
+                                        merge(optionresult, traverseResult);
+                                    }
+                                }
+                            }
+                        } else {
+                            fromdeck = deck;
+                            long[] traverseResult = recursiveOptionscore(0, 0, (hand & ~option.option) | fromdeck, score + option.score, depth - decksize);
+                            merge(optionresult, traverseResult);
+                        }
+                        bestscoreresult = mergeresult(bestscoreresult, optionresult);
+                    }
+                }
             }
-        }
-        int canthrow = hand;
-        while (canthrow > 0) {
-            int option = Integer.lowestOneBit(canthrow);
-            canthrow &= ~option;
-            long[] throwresult = new long[6];
-            throwresult[5] = option;
-            int bit1, bit1left = deck;
-            while (bit1left > 0) {
-                bit1 = Integer.lowestOneBit(bit1left);
-                bit1left &= ~bit1;
-                long[] traverseResult = recursiveOptionscore(deck & ~bit1, decksize - 1, (hand & ~option) | bit1, score, depth - 1);
-                merge(throwresult, traverseResult);
+            result = bestscore(bestscoreresult, bestthrowresult);
+            if (result == null) {
+                int sc = score + Capacity.capacity(hand | deck);
+                if (sc < 250) {
+                    result =  new long[]{1, 1, 0, 0, sc, 0}; //ToDo WRONG
+                } else if (sc < 400) {
+                    result =  new long[]{1, 0, 1, 0, sc, 0}; //ToDo WRONG
+                } else {
+                    result =  new long[]{1, 0, 0, 1, sc, 0}; //ToDo WRONG
+                }
+
             }
-            result = mergeresult(result, throwresult);
-        }
         return result;
+    }
+
+    private long[] bestscore(long[] bestscoreresult, long[] bestthrowresult) {
+        if (bestscoreresult == null) return bestthrowresult;
+        if (bestthrowresult == null) return bestscoreresult;
+        long avbestscoreresult = bestscoreresult[0] == 0 ? 0 : bestscoreresult[5] / bestscoreresult[0];
+        long avbestthrowresult = bestthrowresult[0] == 0 ? 0 : bestthrowresult[5] / bestthrowresult[0];
+        if (avbestscoreresult < avbestthrowresult) {
+            return bestthrowresult;
+        } else {
+            return bestscoreresult;
+        }
     }
 
     /**
@@ -103,13 +140,13 @@ public class RecursiveCapHelperImpl implements RoomyHelper {
      * @return
      */
     private long [] mergeresult(long[] result, long[] optionresult) {
-        //return mergeresult1(result, optionresult);
-        return mergeresult2(result, optionresult);
+        return mergeresult1(result, optionresult);
+        //return mergeresult2(result, optionresult);
     }
 
     private long[] mergeresult1(long[] result, long[] optionresult) {
 
-        if (result[0] == 0) {
+        if (result == null) {
             return optionresult;
         } else {
             if (result[3] * optionresult[0] < optionresult[3] * result[0]) {
@@ -125,7 +162,7 @@ public class RecursiveCapHelperImpl implements RoomyHelper {
     }
     private long[] mergeresult2(long[] result, long[] optionresult) {
 
-        if (result[0] == 0) {
+        if (result == null) {
             return optionresult;
         } else {
             if (result[4] * optionresult[0] < optionresult[4] * result[0]) {

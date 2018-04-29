@@ -29,8 +29,10 @@ public class RHImpl implements RoomyHelper {
             canthrow &= ~option;
             int possiblescore = score + Capacity.capacity(deck | hand & ~option);
             if (bestthrowscore < possiblescore) {
-                bestthrowscore = possiblescore;
-                bestthrow = option;
+                if ((notInSequence(hand, option) && bestthrowscore + 20 < possiblescore) || bestthrowscore == 0) {
+                    bestthrowscore = possiblescore;
+                    bestthrow = option;
+                }
             } else if (bestthrowscore == possiblescore && possiblescore > 0 && bestthrowscore == score) {
                 // compare bestthrow and option if they breaking almost ready combination
                 /*int optionBreakScore = 0;
@@ -49,11 +51,19 @@ public class RHImpl implements RoomyHelper {
                 }*/
             }
         }
-        if (bestscore + 30 < bestthrowscore) {
+        if (bestscore + 20 < bestthrowscore) {
             return new int[]{bestthrow, bestthrowscore};
         } else {
             return new int[]{bestoption, bestscore};
         }
+    }
+
+    private boolean notInSequence(int hand, int option) {
+
+        return (((hand & 0xFF) & (option << 1 | option >> 1)) |
+        ((hand & 0xFF00) & (option << 1 | option >> 1)) |
+        ((hand & 0xFF0000) & (option << 1 | option >> 1)))
+                == 0;
     }
 
     private int lowest(int hand) {
