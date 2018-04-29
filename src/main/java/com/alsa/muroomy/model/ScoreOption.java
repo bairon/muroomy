@@ -15,6 +15,7 @@ public class ScoreOption {
     public int c;
     public int option;
     public int score;
+    public boolean colored;
 
     /**
      * 11 12 13
@@ -31,7 +32,8 @@ public class ScoreOption {
                                         (1 + i) * 10 + k + 1,
                                         (2 + i) * 10 + l + 1,
                                         (3 + i) * 10 + m + 1,
-                                        (k == l && l == m ? 40 : 0) + (i+1) * 10
+                                        (k == l && l == m ? 40 : 0) + (i+1) * 10,
+                                        k == l && l == m
                                 ));
                     }
                 }
@@ -40,18 +42,19 @@ public class ScoreOption {
         for (int j = 0; j < 8; ++j) {
             allOptions.add(new ScoreOption(
                     10 * (j + 1) + 1, 10 * (j + 1) + 2, 10 * (j + 1) + 3,
-                    (j + 2) * 10
+                    (j + 2) * 10, true
             ));
 
         }
     }
 
-    public ScoreOption(int a, int b, int c, int score) {
+    public ScoreOption(int a, int b, int c, int score, boolean colored) {
         this.a = a;
         this.b = b;
         this.c = c;
         this.option |= toOption(a) | toOption(b) | toOption(c);
         this.score = score;
+        this.colored = colored;
     }
 
     private int toOption(int a) {

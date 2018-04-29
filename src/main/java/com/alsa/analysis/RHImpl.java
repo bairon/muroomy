@@ -33,25 +33,9 @@ public class RHImpl implements RoomyHelper {
                     bestthrowscore = possiblescore;
                     bestthrow = option;
                 }
-            } else if (bestthrowscore == possiblescore && possiblescore > 0 && bestthrowscore == score) {
-                // compare bestthrow and option if they breaking almost ready combination
-                /*int optionBreakScore = 0;
-                int bestOptionBreakScore = 0;
-                for (ScoreOption possible : ScoreOption.allOptions) {
-                    if (Integer.bitCount(possible.option & hand) == 2 && (possible.option & option) > 0) {
-                        optionBreakScore += possible.score;
-                    }
-                    if (Integer.bitCount(possible.option & hand) == 2 && (possible.option & bestthrow) > 0) {
-                        bestOptionBreakScore += possible.score;
-                    }
-                }
-                if (optionBreakScore < bestOptionBreakScore) {
-                    bestthrowscore = possiblescore;
-                    bestthrow = option;
-                }*/
             }
         }
-        if (bestscore + 20 < bestthrowscore) {
+        if (bestscore + 20 < bestthrowscore || bestscore < bestthrowscore && Integer.bitCount(deck) < 8) {
             return new int[]{bestthrow, bestthrowscore};
         } else {
             return new int[]{bestoption, bestscore};
