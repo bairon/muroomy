@@ -29,21 +29,12 @@ public class TestSuite {
         int position = 0;
         RoomyHelper helper = rh;
         do {
-            int decksize = Integer.bitCount(input.deck);
-            //System.out.print(String.format("Deck: %s Hand: %s ", decksize, Utils.format(input.hand)));
-            long start = System.currentTimeMillis();
-            //if (decksize > 0) helper = rh;
-            //else helper = rec;
             int[] optionscore = helper.optionscore(input.deck, input.hand, score);
-            long end = System.currentTimeMillis();
-            if (optionscore[0] == 0) {
-                optionscore = rh.optionscore(input.deck, input.hand, score);
-            }
             ScoreOption scoreOption = ScoreOption.fromOption(optionscore[0]);
             if (scoreOption != null) {
                 score += scoreOption.score;
             }
-            if (optionscore[0] == 0) return 0;
+            if (optionscore[0] == 0) return score;
             //System.out.println(String.format(" Move %s Score %s Time %s", Utils.format(optionscore[0]), score, ((end - start) / 1000)));
             input.hand &= ~optionscore[0];
             while (position < input.order.length && Integer.bitCount(input.hand) < 5) {

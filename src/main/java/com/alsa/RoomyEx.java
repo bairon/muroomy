@@ -41,7 +41,7 @@ public class RoomyEx {
         while(Integer.bitCount(hand | deck) > 2) {
             optionscore = rh.optionscore(deck, hand, score);
             printstatus();
-            if (optionscore[0] == 0) break;
+            if (optionscore[0] == 0 || optionscore[1] < 250 || score >= optionscore[1]) break;
             move = optionscore[0];
             controller.makeMove(move);
             ScoreOption scoreOption = ScoreOption.fromOption(move);

@@ -30,7 +30,7 @@ public class MuHelper {
         while(Integer.bitCount(hand | deck) > 2) {
             optionscore = rh.optionscore(deck, hand, score);
             printstatus();
-            if (optionscore[0] == 0) break;
+            if (optionscore[0] == 0 || optionscore[1] < 250) break;
             move = optionscore[0];//input("Enter move:");
             ScoreOption scoreOption = ScoreOption.fromOption(move);
             if (scoreOption != null) {

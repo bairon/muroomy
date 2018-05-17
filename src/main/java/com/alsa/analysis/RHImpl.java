@@ -21,19 +21,28 @@ public class RHImpl implements RoomyHelper {
                 }
             }
         }
+        //deck = 0b11110100_01001110_10101110;
+        //hand = 0b11_10110000_00000000;
         int canthrow = hand;
         int bestthrow = 0;
         int bestthrowscore = 0;
         while (canthrow > 0) {
             int option = lowest(canthrow);
             canthrow &= ~option;
-            int possiblescore = score + Capacity.capacity(deck | hand & ~option);
-            if (bestthrowscore < possiblescore) {
-                if ((notInSequence(hand, option) && bestthrowscore + 20 < possiblescore) || bestthrowscore == 0) {
-                    bestthrowscore = possiblescore;
+            int possiblescoreNew = score + Capacity.capacity(deck | hand & ~option);
+            int possiblescoreOld = score + Capacity.capacity(deck | hand);
+            if (bestthrowscore < possiblescoreNew) {
+                if ((possiblescoreNew == possiblescoreOld) || (notInSequence(hand, option) && bestthrowscore + 30 < possiblescoreNew) || bestthrowscore == 0) {
+                    bestthrowscore = possiblescoreNew;
                     bestthrow = option;
                 }
             }
+        }
+        if (bestthrowscore == 0 || bestscore >= 400 && bestthrowscore < 400) {
+            return new int[]{bestoption, bestscore};
+        }
+        if (bestscore == 0 || bestthrowscore >= 400 && bestscore < 400) {
+            return new int[]{bestthrow, bestthrowscore};
         }
         if (bestscore + 20 < bestthrowscore || bestscore < bestthrowscore && Integer.bitCount(deck) < 8) {
             return new int[]{bestthrow, bestthrowscore};
@@ -43,11 +52,14 @@ public class RHImpl implements RoomyHelper {
     }
 
     private boolean notInSequence(int hand, int option) {
-
-        return (((hand & 0xFF) & (option << 1 | option >> 1)) |
-        ((hand & 0xFF00) & (option << 1 | option >> 1)) |
-        ((hand & 0xFF0000) & (option << 1 | option >> 1)))
-                == 0;
+        if ((option & 0xFF) > 0) {
+            return (hand & 0xFF & (option << 1 | option >> 1)) == 0;
+        } else if ((option & 0xFF00) > 0) {
+            return (hand & 0xFF00 & (option << 1 | option >> 1)) == 0;
+        } else if ((option & 0xFF0000) > 0) {
+            return (hand & 0xFF0000 & (option << 1 | option >> 1)) == 0;
+        }
+        return true;
     }
 
     private int lowest(int hand) {
